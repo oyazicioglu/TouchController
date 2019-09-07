@@ -15,6 +15,9 @@ namespace Metropolis.InputControllers
         public delegate void OneFingerHoldHandler(Vector2 Position);
         public OneFingerHoldHandler OnOneFingerHold;
 
+        public delegate void OneFingerSwipe(Vector2 BeginPosition, Vector2 EndPosition, SwipeDirections Direction);
+        public OneFingerSwipe OnOneFingerSwipe;
+
         // Determine if finger is holded or not
         private bool IsHolded = false;
 
@@ -47,46 +50,45 @@ namespace Metropolis.InputControllers
             // The fingers that touched on screen
             var fingers = Input.touches;
 
-            for (int i = 0; i < Input.touchCount; i++)
+            var i = 0;
+            foreach (var finger in fingers)
             {
-                var rayResult = TouchHelper.RaycastGUI(fingers[i].position);
+                StartPositions.Add(finger.position);
+                var rayResult = TouchHelper.RaycastGUI(finger.position);
                 foreach (var item in rayResult)
                 {
                     if (TouchHelper.CheckRaycastObject(item, this.gameObject))
-                        BeginOneFingerTouch(fingers[i], item);
-                }
-            }
+                    {
+                        if (finger.phase == TouchPhase.Began)
+                        {
+                            HoldCoroutine = FingerHold(finger.position);
+                            StartCoroutine(HoldCoroutine);
+                        }
 
-            // Record all fingers position when touched
-            foreach (var touch in Input.touches)
-            {
-                StartPositions.Add(touch.position);
+                        if (finger.phase == TouchPhase.Ended)
+                        {
+                            if (!IsHolded)
+                                OnOneFingerTouch?.Invoke(finger.position);
+
+                            StopCoroutine(HoldCoroutine);
+                            IsHolded = false;
+                        }
+
+                        if (finger.phase == TouchPhase.Moved)
+                        {
+                            OnOneFingerSwipe?.Invoke(StartPositions[i], finger.position, SwipeDirections.Bottom);
+                            IsHolded = false;
+                            StopCoroutine(HoldCoroutine);
+
+                        }
+                    }
+
+                }
+
+                i++;
             }
 
             Reset();
-        }
-
-        /// <summary>
-        /// Assings all gestures related to one finger touch
-        /// </summary>
-        /// <param name="touch"></param>
-        /// <param name="item"></param>
-        private void BeginOneFingerTouch(Touch touch, RaycastResult item)
-        {
-            if (touch.phase == TouchPhase.Began)
-            {
-                HoldCoroutine = FingerHold(touch.position);
-                StartCoroutine(HoldCoroutine);
-            }
-
-            if (touch.phase == TouchPhase.Ended)
-            {
-                if (!IsHolded)
-                    OnOneFingerTouch?.Invoke(touch.position);
-
-                IsHolded = false;
-                StopCoroutine(HoldCoroutine);
-            }
         }
 
         /// <summary>

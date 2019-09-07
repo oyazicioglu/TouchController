@@ -17,6 +17,18 @@ public class Startup : MonoBehaviour
         ImageTouchController3.OnOneFingerTouch += OnImageTouch3;
         ImageTouchController2.OnOneFingerHold += OnImageHold2;
         ImageTouchController3.OnOneFingerHold += OnImageHold3;
+        ImageTouchController2.OnOneFingerSwipe += OnImageSwipe2;
+        ImageTouchController3.OnOneFingerSwipe += OnImageSwipe3;
+    }
+
+    private void OnImageSwipe2(Vector2 BeginPosition, Vector2 EndPosition, SwipeDirections Direction)
+    {
+        Log("Swiped Image 2 to : " + Direction.ToString());
+    }
+
+    private void OnImageSwipe3(Vector2 BeginPosition, Vector2 EndPosition, SwipeDirections Direction)
+    {
+        Log("Swiped Image 3 to : " + Direction.ToString());
     }
 
     private void OnImageHold3(Vector2 Position)
