@@ -23,31 +23,31 @@ public class Startup : MonoBehaviour
 
     private void OnImageSwipe2(Vector2 BeginPosition, Vector2 EndPosition, SwipeDirections Direction)
     {
-        Log("Swiped Image 2 to : " + Direction.ToString());
+        Debug.Log("Swiped Image 2 to : " + Direction.ToString());
     }
 
     private void OnImageSwipe3(Vector2 BeginPosition, Vector2 EndPosition, SwipeDirections Direction)
     {
-        Log("Swiped Image 3 to : " + Direction.ToString());
+        Debug.Log("Swiped Image 3 to : " + Direction.ToString());
     }
 
     private void OnImageHold3(Vector2 Position)
     {
-        Log(" Holded Image 3");
+        Debug.Log(" Holded Image 3");
     }
 
     private void OnImageHold2(Vector2 Position)
     {
-        Log(" Holded Image 2");
+        Debug.Log(" Holded Image 2");
     }
 
     private void OnImageTouch2(Vector2 Position)
     {
-        Log(ImageTouchController2.gameObject.name);
+        Debug.Log(ImageTouchController2.gameObject.name);
     }
     private void OnImageTouch3(Vector2 Position)
     {
-        Log(ImageTouchController3.gameObject.name);
+        Debug.Log(ImageTouchController3.gameObject.name);
     }
 
 

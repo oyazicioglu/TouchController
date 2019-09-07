@@ -4,7 +4,7 @@ namespace Metropolis.InputControllers
     {
         Left = 0,
         Right = 1,
-        Top = 2,
+        Up = 2,
         Bottom = 3
     }
 }
