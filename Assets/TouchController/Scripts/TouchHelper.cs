@@ -21,11 +21,22 @@ namespace Metropolis.InputControllers
             return result;
         }
 
-        public static bool CheckRaycastObject(RaycastResult raycastedObject, GameObject gameObject)
+        public static bool CheckRaycastObject(Vector2 position, GameObject gameObject)
         {
-            if (raycastedObject.gameObject == null)
-                return false;
-            return raycastedObject.gameObject == gameObject ? true : false;
+            var isFound = false;
+            var rayResult = TouchHelper.RaycastGUI(position);
+            foreach (var item in rayResult)
+            {
+                if (item.gameObject == gameObject)
+                {
+                    isFound = true;
+                }
+                else
+                {
+                    isFound = false;
+                }
+            }
+            return isFound;
         }
 
     }

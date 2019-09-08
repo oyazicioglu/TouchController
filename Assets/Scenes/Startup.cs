@@ -7,52 +7,30 @@ using UnityEngine.UI;
 
 public class Startup : MonoBehaviour
 {
-    [SerializeField] Text DebugText = null;
-    public TouchController ImageTouchController2;
-    public TouchController ImageTouchController3;
+    [SerializeField] TouchController go = null;
+
     // Start is called before the first frame update
     void Start()
     {
-        ImageTouchController2.OnOneFingerTouch += OnImageTouch2;
-        ImageTouchController3.OnOneFingerTouch += OnImageTouch3;
-        ImageTouchController2.OnOneFingerHold += OnImageHold2;
-        ImageTouchController3.OnOneFingerHold += OnImageHold3;
-        ImageTouchController2.OnOneFingerSwipe += OnImageSwipe2;
-        ImageTouchController3.OnOneFingerSwipe += OnImageSwipe3;
+        go.OnFingerSwipe += OnSwipe;
+        go.OnFingerTouch += OnTouch;
+        go.OnFingerHold += OnHold;
     }
 
-    private void OnImageSwipe2(Vector2 BeginPosition, Vector2 EndPosition, SwipeDirections Direction)
+    private void OnHold(Vector2 Position)
     {
-        Debug.Log("Swiped Image 2 to : " + Direction.ToString());
+        Debug.Log("holded");
     }
 
-    private void OnImageSwipe3(Vector2 BeginPosition, Vector2 EndPosition, SwipeDirections Direction)
+    private void OnTouch(Vector2 Position)
     {
-        Debug.Log("Swiped Image 3 to : " + Direction.ToString());
+        Debug.Log("Touched");
     }
 
-    private void OnImageHold3(Vector2 Position)
+    private void OnSwipe(SwipeDirections Direction)
     {
-        Debug.Log(" Holded Image 3");
-    }
-
-    private void OnImageHold2(Vector2 Position)
-    {
-        Debug.Log(" Holded Image 2");
-    }
-
-    private void OnImageTouch2(Vector2 Position)
-    {
-        Debug.Log(ImageTouchController2.gameObject.name);
-    }
-    private void OnImageTouch3(Vector2 Position)
-    {
-        Debug.Log(ImageTouchController3.gameObject.name);
+        Debug.Log(Direction.ToString());
     }
 
 
-    public void Log(string Message)
-    {
-        DebugText.text += Message + "\n";
-    }
 }
