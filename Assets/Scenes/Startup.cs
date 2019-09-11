@@ -12,6 +12,9 @@ public class Startup : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (go == null)
+            return;
+
         go.OnSwipe += OnSwipe;
         go.OnTouch += OnTouch;
         go.OnHold += OnHold;
@@ -20,12 +23,12 @@ public class Startup : MonoBehaviour
 
     private void OnPinch(float Ratio, PinchDirections Direction)
     {
-        Debug.Log("Pinch " + Direction + " - Ratio : " + Ratio.ToString());
+        Debug.Log("Pinch to " + Direction + " with " + Ratio.ToString() + " ratio.");
     }
 
     private void OnHold(Vector2 Position)
     {
-        Debug.Log("holded");
+        Debug.Log("Holded");
     }
 
     private void OnTouch(Vector2 Position)

@@ -251,12 +251,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 786270577}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 758cbf2343405697c8eef9255b201284, type: 3}
+  m_Script: {fileID: 11500000, guid: 14f403b87fa54fd89ad7476380e0bb05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SwipeThreshold: 100
-  RotateThreshold: 10
-  HoldDuration: 1
+  swipeThreshold: 100
+  holdDuration: 1
+  touchDelay: 0.25
 --- !u!114 &786270580
 MonoBehaviour:
   m_ObjectHideFlags: 0
