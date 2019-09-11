@@ -18,9 +18,9 @@ public class Startup : MonoBehaviour
         go.OnPinch += OnPinch;
     }
 
-    private void OnPinch(PinchDirections Direction)
+    private void OnPinch(float Ratio, PinchDirections Direction)
     {
-        Debug.Log("Pinch " + Direction);
+        Debug.Log("Pinch " + Direction + " - Ratio : " + Ratio.ToString());
     }
 
     private void OnHold(Vector2 Position)
