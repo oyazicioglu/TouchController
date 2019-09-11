@@ -10,14 +10,17 @@ namespace Metropolis.InputControllers
     {
         /// The event and event handler that capture one finger pressed and ended
         public delegate void OneFingerTouchHandler(Vector2 Position);
-        public OneFingerTouchHandler OnFingerTouch;
+        public OneFingerTouchHandler OnTouch;
 
         /// The event and event handler that capture one finger pressed and ended
         public delegate void OneFingerHoldHandler(Vector2 Position);
-        public OneFingerHoldHandler OnFingerHold;
+        public OneFingerHoldHandler OnHold;
 
         public delegate void OneFingerSwipe(SwipeDirections Direction);
-        public OneFingerSwipe OnFingerSwipe;
+        public OneFingerSwipe OnSwipe;
+
+        public delegate void PinchTouchEventHandler(PinchDirections Direction);
+        public PinchTouchEventHandler OnPinch;
 
         [SerializeField]
         private float SwipeThreshold = 100f;
@@ -38,15 +41,13 @@ namespace Metropolis.InputControllers
         // Start positions of touched fingers
         private Vector2 OneFingerStartPosition;
 
-        private List<Vector2> TwoFingerStartPositions;
+       
+        private Vector2[] TwoFingerEndPositions;
+        private Vector2[] TwoFingerStartPositions;
+        private Vector2[] PinchDeltas;
 
-        private List<Vector2> SwipeDeltas;
+        private Vector2 SwipeDelta;
 
-        private List<Vector2> PinchDeltas;
-
-        private IEnumerator TouchStartCoroutine;
-        private float TouchStartDelay = 0.3f;
-        private bool TouchStarted = false;
 
         GestureTypes GestureType;
 
@@ -56,14 +57,6 @@ namespace Metropolis.InputControllers
 
             // Initialize raycast result object
             RaycastResult = new List<RaycastResult>();
-
-            SwipeDeltas = new List<Vector2>();
-
-            TwoFingerStartPositions = new List<Vector2>();
-
-            PinchDeltas = new List<Vector2>();
-
-
         }
 
         // Update is called once per frame
@@ -72,26 +65,6 @@ namespace Metropolis.InputControllers
             if (Input.touchCount == 0)
                 return;
 
-            if (TouchStarted == false)
-            {
-                StartCoroutine(TouchStart());
-            }
-
-            TouchDetection();
-        }
-
-        private IEnumerator TouchStart()
-        {
-            yield return new WaitForSecondsRealtime(TouchStartDelay);
-            TouchStarted = true;
-        }
-
-        private void TouchDetection()
-        {
-            if (TouchStarted == false)
-                return;
-
-            Debug.Log(Input.touchCount);
             // One finger Gestures
             if (Input.touchCount == 1)
             {
@@ -112,16 +85,16 @@ namespace Metropolis.InputControllers
                     StopCoroutine(HoldCoroutine);
 
                     var swipeDelta = finger.position - OneFingerStartPosition;
-                    SwipeDeltas.Add(finger.position - OneFingerStartPosition);
+                    SwipeDelta = finger.position - OneFingerStartPosition;
 
                     if (TouchHelper.CheckRaycastObject(finger.position, this.gameObject))
                     {
-                        DetectSwipe(SwipeDeltas);
+                        DetectSwipe(SwipeDelta);
 
                         if (GestureType == GestureTypes.Touch)
                         {
                             GestureType = GestureTypes.Touch;
-                            OnFingerTouch?.Invoke(finger.position);
+                            OnTouch?.Invoke(finger.position);
                         }
                     }
 
@@ -135,38 +108,43 @@ namespace Metropolis.InputControllers
                 if (HoldCoroutine != null)
                     StopCoroutine(HoldCoroutine);
 
-                foreach (var finger in Input.touches)
+                for (int i = 0; i < Input.touchCount; i++)
                 {
-                    if (finger.phase == TouchPhase.Began)
+                    if (Input.touches[i].phase == TouchPhase.Began)
                     {
-                        TwoFingerStartPositions.Add(finger.position);
+                        TwoFingerStartPositions[i] = Input.touches[i].position;
                     }
-                    else if (finger.phase == TouchPhase.Moved)
+                    else if (Input.touches[i].phase == TouchPhase.Moved)
                     {
-
+                        
                     }
-                    else if (finger.phase == TouchPhase.Ended || finger.phase == TouchPhase.Canceled)
+                    else if (Input.touches[i].phase == TouchPhase.Ended || Input.touches[i].phase == TouchPhase.Canceled)
                     {
-
-
-                        //Reset();
+                        TwoFingerEndPositions[i] = Input.touches[i].position;
+                        DetectPinch(TwoFingerStartPositions, TwoFingerEndPositions);
+                        Reset();
                     }
                 }
             }
         }
 
-        private void DetectPinch(List<Vector2> PinchDeltas)
-        {
 
-            //GestureType = GestureTypes.Pinch;
+        private void DetectPinch(Vector2[] startPositions, Vector2[] endPositions)
+        {
+            float firstPinchDelta = (startPositions[0] - startPositions[1]).magnitude;
+            float secondPinchDelta = (endPositions[0] - endPositions[1]).magnitude;
+
+            if(firstPinchDelta > secondPinchDelta){
+                OnPinch?.Invoke(PinchDirections.In);
+            }else{
+                OnPinch?.Invoke(PinchDirections.Out);
+            }
         }
 
-        private void DetectSwipe(List<Vector2> swipeDeltas)
+        private void DetectSwipe(Vector2 swipeDelta)
         {
             SwipeDirections SwipeDirection;
 
-            foreach (var swipeDelta in swipeDeltas)
-            {
                 if (swipeDelta.magnitude >= SwipeThreshold)
                 {
                     GestureType = GestureTypes.Swipe;
@@ -178,13 +156,12 @@ namespace Metropolis.InputControllers
                     {
                         SwipeDirection = swipeDelta.y < 0 ? SwipeDirections.Bottom : SwipeDirections.Up;
                     }
-                    OnFingerSwipe?.Invoke(SwipeDirection);
+                    OnSwipe?.Invoke(SwipeDirection);
                 }
                 else
                 {
                     return;
                 }
-            }
         }
 
         private bool IsHorizontalSwipe(Vector2 swipeDelta)
@@ -199,9 +176,6 @@ namespace Metropolis.InputControllers
         {
             GestureType = GestureTypes.Touch;
             RaycastResult.Clear();
-            SwipeDeltas.Clear();
-            TwoFingerStartPositions.Clear();
-            TouchStarted = false;
         }
 
         /// <summary>
@@ -214,7 +188,7 @@ namespace Metropolis.InputControllers
         {
             yield return new WaitForSecondsRealtime(HoldDuration);
             GestureType = GestureTypes.Hold;
-            OnFingerHold?.Invoke(position);
+            OnHold?.Invoke(position);
         }
     }
 }

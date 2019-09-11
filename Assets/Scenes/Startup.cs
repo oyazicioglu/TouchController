@@ -12,9 +12,15 @@ public class Startup : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        go.OnFingerSwipe += OnSwipe;
-        go.OnFingerTouch += OnTouch;
-        go.OnFingerHold += OnHold;
+        go.OnSwipe += OnSwipe;
+        go.OnTouch += OnTouch;
+        go.OnHold += OnHold;
+        go.OnPinch += OnPinch;
+    }
+
+    private void OnPinch(PinchDirections Direction)
+    {
+        Debug.Log("Pinch " + Direction);
     }
 
     private void OnHold(Vector2 Position)
