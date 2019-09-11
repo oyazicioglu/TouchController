@@ -38,13 +38,10 @@ namespace Metropolis.InputControllers
         /// Result of raycasting
         private List<RaycastResult> RaycastResult;
 
-        // Start positions of touched fingers
-        private Vector2 OneFingerStartPosition;
-
        
-        private Vector2[] TwoFingerEndPositions;
-        private Vector2[] TwoFingerStartPositions;
-        private Vector2[] PinchDeltas;
+        private Vector2[] StartPositions = new Vector2[2];
+        private Vector2[] EndPositions = new Vector2[2];
+        private Vector2[] PinchDeltas = new Vector2[2];
 
         private Vector2 SwipeDelta;
 
@@ -72,7 +69,7 @@ namespace Metropolis.InputControllers
 
                 if (finger.phase == TouchPhase.Began)
                 {
-                    OneFingerStartPosition = finger.position;
+                    StartPositions[0] = finger.position;
 
                     if (TouchHelper.CheckRaycastObject(finger.position, this.gameObject))
                     {
@@ -83,9 +80,8 @@ namespace Metropolis.InputControllers
                 else if (finger.phase == TouchPhase.Ended || finger.phase == TouchPhase.Canceled)
                 {
                     StopCoroutine(HoldCoroutine);
-
-                    var swipeDelta = finger.position - OneFingerStartPosition;
-                    SwipeDelta = finger.position - OneFingerStartPosition;
+                    EndPositions[0] = finger.position;
+                    SwipeDelta = EndPositions[0] - StartPositions[0];
 
                     if (TouchHelper.CheckRaycastObject(finger.position, this.gameObject))
                     {
@@ -112,16 +108,16 @@ namespace Metropolis.InputControllers
                 {
                     if (Input.touches[i].phase == TouchPhase.Began)
                     {
-                        TwoFingerStartPositions[i] = Input.touches[i].position;
+                        StartPositions[i] = Input.touches[i].position;
                     }
                     else if (Input.touches[i].phase == TouchPhase.Moved)
                     {
-                        
+                        EndPositions[i] = Input.touches[i].position;                        
                     }
                     else if (Input.touches[i].phase == TouchPhase.Ended || Input.touches[i].phase == TouchPhase.Canceled)
                     {
-                        TwoFingerEndPositions[i] = Input.touches[i].position;
-                        DetectPinch(TwoFingerStartPositions, TwoFingerEndPositions);
+                        EndPositions[i] = Input.touches[i].position;
+                        DetectPinch(StartPositions, EndPositions);
                         Reset();
                     }
                 }
