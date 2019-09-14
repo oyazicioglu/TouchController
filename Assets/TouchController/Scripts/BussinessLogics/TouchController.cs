@@ -87,42 +87,6 @@ namespace Metropolis.InputControllers
             }
             */
 
-            // Two finger Gestures
-            if (Input.touchCount == 2)
-            {
-                isTwoFingerPressed = true;
-
-                // If Hold coroutine is started, stop it
-                if (holdCoroutine != null)
-                    StopCoroutine(holdCoroutine);
-
-                // Iterate through all fingers to assign start and end positions
-                for (int i = 0; i < Input.touchCount; i++)
-                {
-                    if (Input.touches[i].phase == TouchPhase.Began)
-                    {
-                        // If fingers touched, store start positions of two fingers
-                        startPositions[i] = Input.touches[i].position;
-                    }
-                    else if (Input.touches[i].phase == TouchPhase.Moved)
-                    {
-                        // Store end positions of fingers
-                        endPositions[i] = Input.touches[i].position;
-
-                    }
-                    else if (Input.touches[i].phase == TouchPhase.Ended || Input.touches[i].phase == TouchPhase.Canceled)
-                    {
-                        // Detect if fingers got closed to each other or got away from each other
-                        DetectPinch(startPositions, endPositions);
-
-                        // Reset the values
-                        Reset();
-                        isTwoFingerPressed = false;
-                        return;
-                    }
-                }
-            }
-
             // One finger Gestures
             if (Input.touchCount == 1)
             {
@@ -168,6 +132,43 @@ namespace Metropolis.InputControllers
                     return;
                 }
             }
+
+            // Two finger Gestures
+            if (Input.touchCount == 2)
+            {
+                isTwoFingerPressed = true;
+
+                // If Hold coroutine is started, stop it
+                if (holdCoroutine != null)
+                    StopCoroutine(holdCoroutine);
+
+                // Iterate through all fingers to assign start and end positions
+                for (int i = 0; i < Input.touchCount; i++)
+                {
+                    if (Input.touches[i].phase == TouchPhase.Began)
+                    {
+                        // If fingers touched, store start positions of two fingers
+                        startPositions[i] = Input.touches[i].position;
+                    }
+                    else if (Input.touches[i].phase == TouchPhase.Moved)
+                    {
+                        // Store end positions of fingers
+                        endPositions[i] = Input.touches[i].position;
+
+                    }
+                    else if (Input.touches[i].phase == TouchPhase.Ended || Input.touches[i].phase == TouchPhase.Canceled)
+                    {
+                        // Detect if fingers got closed to each other or got away from each other
+                        DetectPinch(startPositions, endPositions);
+
+                        // Reset the values
+                        Reset();
+                        isTwoFingerPressed = false;
+                        return;
+                    }
+                }
+            }
+
         }
 
         /// <summary>
