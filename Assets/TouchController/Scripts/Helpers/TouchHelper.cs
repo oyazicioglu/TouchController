@@ -7,7 +7,7 @@ namespace Metropolis.InputControllers
 {
     public sealed class TouchHelper
     {
-        public static List<RaycastResult> RaycastGUI(Vector2 position)
+        public static RaycastResult RaycastGUI(Vector2 position)
         {
             var result = new List<RaycastResult>();
 
@@ -18,25 +18,15 @@ namespace Metropolis.InputControllers
 
             currentEventSystem.RaycastAll(pointerEventData, result);
 
-            return result;
+            return result[0];
         }
 
         public static bool CheckRaycastObject(Vector2 position, GameObject gameObject)
         {
             var isFound = false;
             var rayResult = TouchHelper.RaycastGUI(position);
-            foreach (var item in rayResult)
-            {
-                if (item.gameObject == gameObject)
-                {
-                    isFound = true;
-                }
-                else
-                {
-                    isFound = false;
-                }
-            }
-            return isFound;
+            return rayResult.gameObject == gameObject ? true : false;
+           
         }
 
     }

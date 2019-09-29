@@ -110,7 +110,8 @@ namespace Metropolis.InputControllers
 
                     // IF finger touch is ended or canceled
                     // Stop Hold coroutine and store the end position of finger
-                    StopCoroutine(holdCoroutine);
+                    if(holdCoroutine != null)
+                        StopCoroutine(holdCoroutine);
                     endPositions[0] = finger.position;
 
                     // Check if this object is under the touched position
